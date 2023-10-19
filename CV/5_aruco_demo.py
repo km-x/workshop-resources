@@ -9,6 +9,8 @@ if not cap.isOpened():
 
 camera_matrix = np.load('mtx.npy')
 dist_coeffs = np.load('dist.npy')
+print(camera_matrix)
+print(dist_coeffs)
 
 while True:
     ret, img = cap.read()
@@ -16,8 +18,8 @@ while True:
     if not ret:
         break
 
-    aruco_dict = cv.aruco.Dictionary_get(cv.aruco.DICT_4X4_100)
-    arucoParams = cv.aruco.DetectorParameters_create()
+    aruco_dict = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_6X6_100) # change to the CV2 definnitions such as arucoget predeifnided dictionary (cv.aruco.DICT_ARUCO_ORIGINAL)
+    arucoParams = cv.aruco.DetectorParameters()
     (corners_list, ids, rejected) = cv.aruco.detectMarkers(img, aruco_dict, parameters=arucoParams)
 
     if corners_list:
@@ -26,7 +28,7 @@ while True:
         for corners, id in zip(corners_list, ids):
             pts = np.array(corners,dtype=np.int32)
             cv.polylines(img, pts, True, (0, 0, 255), 10)
-            markerLength = 0.028 # 28 mm
+            markerLength = 0.010 # 28 mm
             rvec, tvec, _ = cv.aruco.estimatePoseSingleMarkers(corners, markerLength, camera_matrix, dist_coeffs)
             rvecs.append(rvec)
             tvecs.append(tvec)
